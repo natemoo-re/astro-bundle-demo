@@ -60,7 +60,6 @@ export async function emitAssetWithCache(key, generateAsset) {
     return name;
 }
 
-export async function get({ request, params }) {
-	console.log(params);
-	return new Response({ status: 404 });
+export async function get({ params }) {
+	return new Response(JSON.stringify(params), { status: 200, headers: { 'Content-Type': 'application/json' } });
 }
