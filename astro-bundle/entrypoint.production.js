@@ -1,4 +1,4 @@
-import Keyv from "keyv";
+import Keyv from "@keyv/mysql";
 
 const cache = new Keyv("{%URL%}")
 const PREFIX = "{%PREFIX%}"
