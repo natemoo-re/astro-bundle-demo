@@ -14,12 +14,16 @@ const integration = () => {
   return {
     name: namespace,
     hooks: {
-      async "astro:config:setup"({ command, config: _config, updateConfig }) {
+      async "astro:config:setup"({ injectRoute, command, config: _config, updateConfig }) {
         config = _config;
         cache = new BundleCache(new URL('./node_modules/.astro/bundle/', config.root));
         globalThis[namespace] = { cache }
 
-        const prefix = `/${config.build.assets}/`;
+        const prefix = `/${config.build.assets}/bundle/`;
+        injectRoute({
+          pattern: `${prefix}[...slug]`,
+          entryPoint: namespace
+        })
         updateConfig({
           vite: {
             plugins: [

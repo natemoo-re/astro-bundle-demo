@@ -59,3 +59,8 @@ export async function emitAssetWithCache(key, generateAsset) {
     await cache.set(name, content);
     return name;
 }
+
+export async function get({ request, params }) {
+	console.log(params);
+	return new Response({ status: 404 });
+}
