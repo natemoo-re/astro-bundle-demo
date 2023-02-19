@@ -3,7 +3,7 @@ import { lookup } from 'mrmime';
 
 import { BundleCache } from './cache.js';
 
-const namespace = "astro:bundle";
+const namespace = "astro:store";
 const virtualId = `\0${namespace}`;
 
 /** @type {import('astro').AstroIntegration} */
@@ -19,12 +19,15 @@ const integration = () => {
         cache = new BundleCache(new URL('./node_modules/.astro/bundle/', config.root));
         globalThis[namespace] = { cache }
 
-        const prefix = `/${config.build.assets}/bundle/`;
-        injectRoute({
-          pattern: `${prefix}[...slug]`,
-          // TODO: allow virtual entryPoint
-          entryPoint: './src/bundle.ts'
-        })
+        const ssr = config.output === 'server';
+        const prefix = `/${config.build.assets}/store/`;
+        if (ssr) {
+          injectRoute({
+            pattern: `${prefix}[...slug]`,
+            // TODO: allow virtual entryPoint
+            entryPoint: './src/bundle.ts'
+          })
+        }
         updateConfig({
           vite: {
             plugins: [
@@ -51,7 +54,7 @@ const integration = () => {
                 load(id) {
                   if (id !== virtualId) return;
 
-                  if (command === 'build') {
+                  if (command === 'build' && ssr) {
                     // TODO: configure keyv adapter automatically
                     const virtualFile = fs.readFileSync(new URL('./entrypoint.production.js', import.meta.url), 'utf8')
                       .replace('"{%URL%}"', "process.env.DB_URL")
@@ -73,8 +76,8 @@ const integration = () => {
         cache = new BundleCache(new URL('./node_modules/.astro/bundle/', config.root));
         globalThis[namespace] = { cache };
       },
-      async "astro:build:generated"() {
-        await cache.finalize();
+      async "astro:build:generated"({ dir }) {
+        await cache.build(dir);
       },
     },
   };

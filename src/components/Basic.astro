@@ -1,12 +1,13 @@
 ---
-import { emitAsset } from "astro:bundle";
+import { Store } from "astro:store";
 
 interface Props {
   data: any;
 }
 
-const asset = await emitAsset(
-  "@basic/[hash].json",
+const store = new Store("image");
+const asset = await store.put(
+  "[hash].json",
   JSON.stringify(Astro.props.data, null, 2)
 );
 ---

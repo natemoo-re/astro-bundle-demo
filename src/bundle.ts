@@ -1,1 +1,1 @@
-export * from 'astro:bundle';
+export * from 'astro:store';
