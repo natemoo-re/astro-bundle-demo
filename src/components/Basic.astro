@@ -7,7 +7,7 @@ interface Props {
 
 const asset = await emitAsset(
   "@basic/[hash].json",
-  JSON.stringify({ a: 1, b: true, c: [] }, null, 2)
+  JSON.stringify(Astro.props.data, null, 2)
 );
 ---
 
