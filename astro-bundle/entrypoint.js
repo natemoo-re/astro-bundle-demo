@@ -51,7 +51,7 @@ export async function emitAsset(path, content) {
     return name;
 }
 
-export async function emitCachedAsset(key, generateAsset) {
+export async function emitAssetWithCache(key, generateAsset) {
 	const name = `${PREFIX}${key}`;
 	if (globalThis[NAMESPACE].cache.has(name)) return name;
 	const content = await generateAsset();
