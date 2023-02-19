@@ -22,6 +22,7 @@ const integration = () => {
         const prefix = `/${config.build.assets}/bundle/`;
         injectRoute({
           pattern: `${prefix}[...slug]`,
+          // TODO: allow virtual entryPoint
           entryPoint: './src/bundle.ts'
         })
         updateConfig({
@@ -51,6 +52,7 @@ const integration = () => {
                   if (id !== virtualId) return;
 
                   if (command === 'build') {
+                    // TODO: configure keyv adapter automatically
                     const virtualFile = fs.readFileSync(new URL('./entrypoint.production.js', import.meta.url), 'utf8')
                       .replace('"{%URL%}"', "process.env.DB_URL")
                       .replace('{%PREFIX%}', prefix);
