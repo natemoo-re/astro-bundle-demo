@@ -1,6 +1,6 @@
 import Keyv from "@keyv/mysql";
 
-const cache = new Keyv({ uri: "{%URL%}", table: 'astro:bundle' })
+const cache = new Keyv({ uri: "{%URL%}" })
 const PREFIX = "{%PREFIX%}"
 const dictionary = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY';
 const binary = dictionary.length;
