@@ -60,6 +60,9 @@ export async function emitAssetWithCache(key, generateAsset) {
     return name;
 }
 
-export async function get({ params }) {
-	return new Response(JSON.stringify(params), { status: 200, headers: { 'Content-Type': 'application/json' } });
+export async function get({ params: { slug } }) {
+	const name = `${PREFIX}${slug}`;
+	if (!(await cache.has(name))) return new Response(null, { status: 404 });
+	const body = await cache.get(name);
+	return new Response(body, { status: 200, headers: { 'Content-Type': 'application/json' } });
 }
