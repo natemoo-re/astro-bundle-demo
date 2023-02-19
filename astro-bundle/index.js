@@ -22,7 +22,7 @@ const integration = () => {
         const prefix = `/${config.build.assets}/bundle/`;
         injectRoute({
           pattern: `${prefix}[...slug]`,
-          entryPoint: namespace
+          entryPoint: '/src/bundle.ts'
         })
         updateConfig({
           vite: {
