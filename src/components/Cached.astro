@@ -1,0 +1,22 @@
+---
+import { hash, emitCachedAsset } from "astro:bundle";
+
+interface Props {
+  data: any;
+}
+
+const { data } = Astro.props;
+const h = hash(JSON.stringify(data));
+
+const asset = await emitCachedAsset(`@cached/${h}.json`, async () => {
+  await new Promise((res) => setTimeout(res, 2000));
+  return JSON.stringify({ a: 1, b: true, c: [] }, null, 2).trim();
+});
+---
+
+<pre>{asset}</pre>
+
+<script type="module" define:vars={{ asset }}>
+  const foo = await fetch(asset).then((res) => res.json());
+  console.log(foo);
+</script>

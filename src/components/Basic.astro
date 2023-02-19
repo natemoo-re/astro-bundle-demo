@@ -1,0 +1,19 @@
+---
+import { emitAsset } from "astro:bundle";
+
+interface Props {
+  data: any;
+}
+
+const asset = await emitAsset(
+  "@basic/[hash].json",
+  JSON.stringify({ a: 1, b: true, c: [] }, null, 2)
+);
+---
+
+<pre>{asset}</pre>
+
+<script type="module" define:vars={{ asset }}>
+  const foo = await fetch(asset).then((res) => res.json());
+  console.log(foo);
+</script>
