@@ -64,5 +64,5 @@ export async function get({ params: { slug } }) {
 	const name = `${PREFIX}${slug}`;
 	if (!(await cache.has(name))) return new Response(null, { status: 404 });
 	const body = await cache.get(name);
-	return new Response(body, { status: 200, headers: { 'Content-Type': 'application/json' } });
+	return new Response(body, { status: 200, headers: { 'Cache-Control': 'public, max-age=604800, immutable', 'Content-Type': 'application/json' } });
 }
