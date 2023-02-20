@@ -5,12 +5,9 @@ export async function post({ request, site }) {
     const formData = await request.formData();
     const data = Object.fromEntries(formData.entries())
     const location = request.headers.get('referer') ?? site;
-
-    await store.set(`submission-[hash]`, JSON.stringify(data, null, 2))
+    
+    const submittedAt = new Date().toISOString();
+    const [y,m,d] = submittedAt.split('T')[0].split('-');
+    await store.set(`${y}/${m}/${d}/[hash]`, JSON.stringify(data, null, 2))
     return new Response(null, { status: 301, headers: { location } });
-}
-
-export async function get() {
-    const data = store.getAll();
-    return new Response(JSON.stringify(data), { status: 200, headers: { 'content-type': 'application/json' } });
 }
