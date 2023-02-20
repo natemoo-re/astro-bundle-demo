@@ -83,7 +83,7 @@ const processing = new Set();
 export class Store {
   constructor(namespace, { asset = false } = {}) {
     this.ns = namespace;
-    if (asset) {
+    if (asset && globalThis[NAMESPACE]) {
       this.local = new LocalStore(namespace);
     }
   }
