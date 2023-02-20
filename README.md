@@ -1,46 +1,81 @@
-# Astro Starter Kit: Minimal
+# **EXPERIMENTAL** `astro:store`
 
+Exploring a simple key/value store primitive exposed as `astro:store`. See [#492](https://github.com/withastro/roadmap/discussions/492).
+
+## Goals
+
+- Provide a key/value store primitive
+- Provide an asset storage primitive
+- Enable generated asset caching between builds
+- Expose a single interface for integrations to persist data/assets
+- No lock-in: users bring their own backend database
+  - `redis`
+  - `mongodb`
+  - `sqlite`
+  - `postgresql`
+  - `mysql`
+  - `etcd`
+- Abstract away complexities of `static` vs `server` vs `prerender` and `dev` vs `build`
+
+## Example
+
+Simple contact form, persisted to your database of choice.
+
+```js
+import { Store } from "astro:store";
+
+// Create a namespaced store
+const store = new Store("my-custom-form");
+
+// Handle form submission
+export async function post({ request, site }) {
+  const formData = await request.formData();
+  const data = Object.fromEntries(formData.entries());
+
+  const { year, month, day } = getYearMonthDay();
+  // Persist data to the store
+  await store.set(
+    `${year}/${month}/${day}/[hash]`,
+    JSON.stringify(data, null, 2)
+  );
+
+  return new Response();
+}
+
+function getYearMonthDay() {
+  const [year, month, day] = new Date().toISOString().split("T")[0].split("-");
+  return { year, month, day };
+}
 ```
-npm create astro@latest -- --template minimal
+
+Generate an asset during the build
+
+```astro
+---
+import { Store } from "astro:store";
+
+const { data } = Astro.props;
+// `asset` flag will write static files to disk, if possible
+const store = new Store("my-custom-assets", { asset: true });
+const assetURL = await store.set("[hash].json", JSON.stringify(data, null, 2));
+---
+
+<pre>{assetURL}</pre>
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/minimal)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/minimal)
+Generate a cached asset during the build
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+```astro
+---
+import { Store, hash } from "astro:store";
 
-## 🚀 Project Structure
+const { data } = Astro.props;
+const contents = JSON.stringify(data, null, 2);
+const name = `${hash(contents)}.json`;
+// `asset` flag will write static files to disk, if possible
+const store = new Store("my-custom-assets", { asset: true });
+const assetURL = await store.setWithCache(name, contents);
+---
 
-Inside of your Astro project, you'll see the following folders and files:
-
+<pre>{assetURL}</pre>
 ```
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                | Action                                           |
-| :--------------------- | :----------------------------------------------- |
-| `npm install`          | Installs dependencies                            |
-| `npm run dev`          | Starts local dev server at `localhost:3000`      |
-| `npm run build`        | Build your production site to `./dist/`          |
-| `npm run preview`      | Preview your build locally, before deploying     |
-| `npm run astro ...`    | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
