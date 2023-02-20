@@ -47,8 +47,7 @@ function generateName(path, content) {
     return `${PREFIX}${path}`;
 }
 
-const day = 24 * 3600 * 1000;
-
+const processing = new Set();
 export class Store {
   constructor(namespace, { asset = false } = {}) {
     this.ns = namespace;
@@ -62,18 +61,16 @@ export class Store {
 
   async set(path, content) {
     const name = generateName(`namespaces/${this.ns}/${path}`, content);
-    await cache.set(name, content, {
-      expires: Date.now() + day,
-      asset: this.asset
-    });
+    await cache.set(name, content);
     return name;
   }
 
   async setWithCache(path, generate) {
     const name = `${PREFIX}namespaces/${this.ns}/${path}`;
-    if (cache.has(name)) return name;
+    if (await cache.has(name) || processing.has(name)) return name;
+    processing.add(name);
     // Immediately start processing the cache
-    return cache.setPromise(name, generate, { expires: Date.now() + day, asset: this.asset }).then(() => name);
+    return cache.set(name, await generate()).then(() => name);
   }
 }
 
