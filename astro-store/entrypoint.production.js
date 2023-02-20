@@ -1,7 +1,7 @@
 import Keyv from "@keyv/mysql";
 import { lookup } from 'mrmime';
 
-const cache = new Keyv({ uri: "{%URL%}", namespace: 'astro:store' })
+const cache = new Keyv({ uri: "{%URL%}", namespace: 'foobar:store' })
 const PREFIX = "{%PREFIX%}"
 const dictionary = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY';
 const binary = dictionary.length;
