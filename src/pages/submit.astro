@@ -1,0 +1,16 @@
+---
+import Layout from "../components/Layout.astro";
+---
+
+<Layout>
+  <h1>Form (SSR)</h1>
+  <p>Form is submitted to endpoint, which persists using store</p>
+  <a href="/">Home</a>
+
+  <div>
+    <form id="foo" method="post" action="/form">
+      <input type="text" name="name" />
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+</Layout>

@@ -1,0 +1,19 @@
+---
+import Layout from "../components/Layout.astro";
+import Basic from "../components/Basic.astro";
+import Cached from "../components/Cached.astro";
+
+const value = new Date().toISOString().split("T")[0];
+---
+
+<Layout>
+  <h1>SSR page</h1>
+  <p>All assets use incremental static regeneration</p>
+
+  <a href="/submit">Submit</a>
+
+  <div>
+    <Basic data={{ value }} />
+    <Cached data={{ value }} />
+  </div>
+</Layout>

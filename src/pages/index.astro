@@ -1,19 +1,23 @@
 ---
+import Layout from "../components/Layout.astro";
 import Basic from "../components/Basic.astro";
 import Cached from "../components/Cached.astro";
+
+export const prerender = true;
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <title>Astro</title>
-  </head>
-  <body>
-    <h1>Astro</h1>
+<Layout>
+  <h1>Prerendered page</h1>
+  <p>All assets are generated at build time</p>
+
+  <a href="/ssr">SSR</a>
+
+  <div>
     <Basic data={{ a: 0, b: true, c: [] }} />
     <Cached data={{ a: 0, b: true, c: [] }} />
-  </body>
-</html>
+    <Basic data={{ a: 1, b: true, c: [] }} />
+    <Cached data={{ a: 1, b: true, c: [] }} />
+    <Basic data={{ a: 2, b: true, c: [] }} />
+    <Cached data={{ a: 2, b: true, c: [] }} />
+  </div>
+</Layout>

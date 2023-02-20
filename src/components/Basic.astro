@@ -1,19 +1,14 @@
 ---
-import { emitAsset } from "astro:bundle";
+import { Store } from "astro:store";
 
 interface Props {
   data: any;
 }
 
-const asset = await emitAsset(
-  "@basic/[hash].json",
-  JSON.stringify(Astro.props.data, null, 2)
-);
+const { data } = Astro.props;
+
+const store = new Store("data", { asset: true });
+const asset = await store.set("[hash].json", JSON.stringify(data, null, 2));
 ---
 
 <pre>{asset}</pre>
-
-<script type="module" define:vars={{ asset }}>
-  const foo = await fetch(asset).then((res) => res.json());
-  console.log(foo);
-</script>

@@ -10,7 +10,10 @@
 		"astro": "astro"
 	},
 	"dependencies": {
-		"astro": "^2.0.14",
+		"@astrojs/netlify": "^2.1.2",
+		"@keyv/mysql": "^1.6.1",
+		"astro": "^2.0.7",
+		"keyv": "^4.5.2",
 		"mrmime": "^1.0.1"
 	},
 	"devDependencies": {
