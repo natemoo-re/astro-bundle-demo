@@ -1,4 +1,5 @@
 import Keyv from "@keyv/mysql";
+import { lookup } from 'mrmime';
 
 const cache = new Keyv({ uri: "{%URL%}" })
 const PREFIX = "{%PREFIX%}"
@@ -76,6 +77,10 @@ export class Store {
   }
 }
 
-export const get = ({ url: { pathname }, params }) => {
-  return new Response(JSON.stringify({ pathname, params }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+export const get = async ({ url: { pathname }}) => {
+  if (!(await cache.has(pathname))) return new Response(null, { status: 404 });
+  const data = await cache.get(pathname);
+  const contentType = lookup(pathname);
+
+  return new Response(data, { status: 200, headers: { 'Content-Type': contentType } });
 }
