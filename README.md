@@ -74,7 +74,11 @@ const contents = JSON.stringify(data, null, 2);
 const name = `${hash(contents)}.json`;
 // `asset` flag will write static files to disk, if possible
 const store = new Store("my-custom-assets", { asset: true });
-const assetURL = await store.setWithCache(name, contents);
+const assetURL = await store.setWithCache(name, async () => {
+  // Do some expensive transformation
+  await new Promise(resolve => setTimeout(resolve, 1000))
+  return contents
+});
 ---
 
 <pre>{assetURL}</pre>
