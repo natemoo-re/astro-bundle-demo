@@ -23,7 +23,7 @@ const integration = () => {
         const prefix = `/${config.build.assets}/store/`;
         if (ssr) {
           injectRoute({
-            pattern: `${prefix}[...slug]`,
+            pattern: `${prefix}namespaces/[namespace]/[...slug]`,
             // TODO: allow virtual entryPoint
             entryPoint: './src/store.ts'
           })
