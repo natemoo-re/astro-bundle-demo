@@ -1,0 +1,21 @@
+---
+import Basic from "../components/Basic.astro";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Astro</title>
+  </head>
+  <body>
+    <h1>Astro</h1>
+    <Basic data={{ a: 0, b: true, c: [] }} />
+    <Basic data={{ a: 1, b: true, c: [] }} />
+    <Basic data={{ a: 2, b: true, c: [] }} />
+    <Basic data={{ a: 3, b: true, c: [] }} />
+    <Basic data={{ a: 4, b: true, c: [] }} />
+  </body>
+</html>

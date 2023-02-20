@@ -5,6 +5,8 @@ import { BundleCache } from './cache.js';
 
 const namespace = "astro:store";
 const virtualId = `\0${namespace}`;
+const injectedId = `/@astrojs/store/injected.js`;
+const injectedVirtualId = `\0${injectedId}`;
 
 /** @type {import('astro').AstroIntegration} */
 const integration = () => {
@@ -24,8 +26,8 @@ const integration = () => {
         if (ssr) {
           injectRoute({
             pattern: `${prefix}namespaces/[namespace]/[...slug]`,
-            // TODO: allow virtual entryPoint
-            entryPoint: './src/store.ts'
+            // TODO: fix hack in core, should allow virtual entrypoints
+            entryPoint: `.${injectedId}`
           })
         }
         updateConfig({
@@ -50,9 +52,14 @@ const integration = () => {
                 },
                 resolveId(id) {
                   if (id === namespace) return virtualId;
+                  if (id === injectedId) return injectedVirtualId;
                 },
                 load(id, opts) {
+                  if (id === injectedVirtualId) {
+                    return `export * from 'astro:store'`
+                  }
                   if (id !== virtualId) return;
+
                   if (command === 'build' && ssr) {
                     // TODO: configure keyv adapter automatically
                     const virtualFile = fs.readFileSync(new URL('./entrypoint.production.js', import.meta.url), 'utf8')

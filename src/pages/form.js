@@ -6,7 +6,7 @@ export async function post({ request, site }) {
     const data = Object.fromEntries(formData.entries())
     const location = request.headers.get('referer') ?? site;
 
-    await store.set(`[hash].json`, JSON.stringify(data, null, 2))
+    await store.set(`submission-[hash]`, JSON.stringify(data, null, 2))
     return new Response(null, { status: 301, headers: { location } });
 }
 
