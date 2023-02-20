@@ -11,6 +11,6 @@ export async function post({ request, site }) {
 }
 
 export async function get() {
-    const data = Store.getAll();
+    const data = store.getAll();
     return new Response(JSON.stringify(data), { status: 200, headers: { 'content-type': 'application/json' } });
 }
