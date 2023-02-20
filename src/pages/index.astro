@@ -19,5 +19,10 @@ import Cached from "../components/Cached.astro";
     <Cached data={{ a: 1, b: true, c: [] }} />
     <Cached data={{ a: 2, b: true, c: [] }} />
     <Cached data={{ a: 2, b: true, c: [] }} />
+
+    <form id="foo" method="post" action="/form">
+      <input type="text" name="name" />
+      <button type="submit">Submit</button>
+    </form>
   </body>
 </html>

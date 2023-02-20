@@ -59,6 +59,14 @@ export class Store {
     return await cache.get(name);
   }
 
+  async getAll() {
+    const result = [];
+    for await (const entry of cache.iterator()) {
+      result.push(entry);
+    }
+    return result
+  }
+
   async set(path, content) {
     const name = generateName(`namespaces/${this.ns}/${path}`, content);
     await cache.set(name, content);
