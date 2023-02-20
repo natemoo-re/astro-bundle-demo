@@ -77,8 +77,8 @@ export class Store {
   }
 }
 
-export const get = async ({ url: { pathname }}) => {
-  if (!(await cache.has(pathname))) return new Response(null, { status: 404 });
+export const get = async ({ url: { pathname }, params }) => {
+  if (!(await cache.has(pathname))) return new Response(JSON.stringify({ pathname, params }), { status: 404 });
   const data = await cache.get(pathname);
   const contentType = lookup(pathname);
 
