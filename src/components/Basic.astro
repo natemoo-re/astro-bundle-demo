@@ -7,7 +7,7 @@ interface Props {
 
 const { data } = Astro.props;
 
-const store = new Store("image", { asset: true });
+const store = new Store("data", { asset: true });
 const asset = await store.set("[hash].json", JSON.stringify(data, null, 2));
 ---
 
