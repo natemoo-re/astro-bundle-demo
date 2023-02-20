@@ -3,8 +3,12 @@ import { lookup } from 'mrmime';
 
 const cache = new Keyv({ uri: "{%URL%}", namespace: 'astro:store' })
 const PREFIX = "{%PREFIX%}"
+const NAMESPACE = "{%NAMESPACE%}";
 const dictionary = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY';
 const binary = dictionary.length;
+
+// Noop connection errors during prerender
+cache.on('error', () => {})
 
 function bitwise(str) {
 	let hash = 0;
@@ -47,25 +51,71 @@ function generateName(path, content) {
     return `${PREFIX}${path}`;
 }
 
+const day = 24 * 3600 * 1000;
+class LocalStore {
+  constructor(namespace) {
+    this.ns = namespace;
+  }
+
+  async get(path) {
+    const name = generateName(`namespaces/${this.ns}/${path}`);
+    return await globalThis[NAMESPACE].cache.get(name);
+  }
+
+  async set(path, content) {
+    const name = generateName(`namespaces/${this.ns}/${path}`, content);
+    await globalThis[NAMESPACE].cache.set(name, content, {
+      expires: Date.now() + day,
+      asset: true
+    });
+    return name;
+  }
+
+  async setWithCache(path, generate) {
+    const name = `${PREFIX}namespaces/${this.ns}/${path}`;
+    if (globalThis[NAMESPACE].cache.has(name)) return name;
+    // Immediately start processing the cache
+    return globalThis[NAMESPACE].cache.setPromise(name, generate, { expires: Date.now() + day, asset: true }).then(() => name);
+  }
+}
+
 const processing = new Set();
 export class Store {
   constructor(namespace, { asset = false } = {}) {
     this.ns = namespace;
-    this.asset = asset;
+    if (asset) {
+      this.local = new LocalStore(namespace);
+    }
+  }
+
+  #local(method, ...args) {
+    if (!this.local) return;
+    try {
+      return this.local[method](...args)
+    } catch {}
   }
 
   async get(path) {
+    const local = await this.#local('get', path);
+    if (local) return local;
+
     const name = generateName(`namespaces/${this.ns}/${path}`);
     return await cache.get(name);
   }
 
   async set(path, content) {
+    const local = await this.#local('set', path, content);
+    if (local) return local;
+
     const name = generateName(`namespaces/${this.ns}/${path}`, content);
     await cache.set(name, content);
     return name;
   }
 
   async setWithCache(path, generate) {
+    const local = await this.#local('setWithCache', path, generate);
+    if (local) return local;
+
     const name = `${PREFIX}namespaces/${this.ns}/${path}`;
     if (await cache.has(name) || processing.has(name)) return name;
     processing.add(name);

@@ -57,6 +57,7 @@ const integration = () => {
                     // TODO: configure keyv adapter automatically
                     const virtualFile = fs.readFileSync(new URL('./entrypoint.production.js', import.meta.url), 'utf8')
                       .replace('"{%URL%}"', "process.env.DB_URL")
+                      .replace('{%NAMESPACE%}', namespace)
                       .replace('{%PREFIX%}', prefix);
                     return virtualFile;
                   } else {

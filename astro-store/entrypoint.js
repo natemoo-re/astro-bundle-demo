@@ -46,7 +46,6 @@ function generateName(path, content) {
 }
 
 const day = 24 * 3600 * 1000;
-
 export class Store {
   constructor(namespace, { asset = false } = {}) {
     this.ns = namespace;
