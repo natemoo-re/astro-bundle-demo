@@ -47,11 +47,14 @@ export class BundleCache {
 	}
 
 	async build(dir) {
-		for (const [file, { expires }] of Object.entries(this.#cache)) {
+		for (const [file, { expires, asset }] of Object.entries(this.#cache)) {
 			if (expires < Date.now()) {
 				delete this.#cache[file];
 				delete this.#processing[file];
-			} else {
+				continue;
+			}
+			
+			if (asset) {
 				const output = new URL(`.${file}`, dir);
 				await fs.promises.mkdir(path.dirname(fileURLToPath(output)), { recursive: true });
 				await fs.promises.writeFile(output, await this.get(file));

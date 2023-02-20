@@ -46,23 +46,36 @@ function generateName(path, content) {
     return `${PREFIX}${path}`;
 }
 
-export async function emitAsset(path, content) {
-    const name = generateName(path, content);
-    await cache.set(name, content);
+const day = 24 * 3600 * 1000;
+
+export class Store {
+  constructor(namespace, { asset = false } = {}) {
+    this.ns = namespace;
+    this.asset = asset;
+  }
+
+  async get(path) {
+    const name = generateName(`namespaces/${this.ns}/${path}`);
+    return await cache.get(name);
+  }
+
+  async set(path, content) {
+    const name = generateName(`namespaces/${this.ns}/${path}`, content);
+    await cache.set(name, content, {
+      expires: Date.now() + day,
+      asset: this.asset
+    });
     return name;
+  }
+
+  async setWithCache(path, generate) {
+    const name = `${PREFIX}namespaces/${this.ns}/${path}`;
+    if (cache.has(name)) return name;
+    // Immediately start processing the cache
+    return cache.setPromise(name, generate, { expires: Date.now() + day, asset: this.asset }).then(() => name);
+  }
 }
 
-export async function emitAssetWithCache(key, generateAsset) {
-	const name = `${PREFIX}${key}`;
-	if (await cache.has(name)) return name;
-	const content = await generateAsset();
-    await cache.set(name, content);
-    return name;
-}
-
-export async function get({ params: { slug } }) {
-	const name = `${PREFIX}${slug}`;
-	if (!(await cache.has(name))) return new Response(null, { status: 404 });
-	const body = await cache.get(name);
-	return new Response(body, { status: 200, headers: { 'Cache-Control': 'public, max-age=604800, immutable', 'Content-Type': 'application/json' } });
+export const get = ({ url: { pathname }, params }) => {
+  return new Response(JSON.stringify({ pathname, params }), { status: 200, headers: { 'Content-Type': 'application/json' } });
 }

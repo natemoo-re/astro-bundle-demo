@@ -45,23 +45,32 @@ function generateName(path, content) {
   return `${PREFIX}${path}`;
 }
 
+const day = 24 * 3600 * 1000;
+
 export class Store {
-  constructor(namespace) {
+  constructor(namespace, { asset = false } = {}) {
     this.ns = namespace;
+    this.asset = asset;
   }
 
-  async put(path, content) {
-    const name = generateName(`namepsaces/${this.ns}/${path}`, content);
+  async get(path) {
+    const name = generateName(`namespaces/${this.ns}/${path}`);
+    return await globalThis[NAMESPACE].cache.get(name);
+  }
+
+  async set(path, content) {
+    const name = generateName(`namespaces/${this.ns}/${path}`, content);
     await globalThis[NAMESPACE].cache.set(name, content, {
-      expires: Date.now() + 60_000,
+      expires: Date.now() + day,
+      asset: this.asset
     });
     return name;
   }
 
-  async putWithCache(path, generate) {
+  async setWithCache(path, generate) {
     const name = `${PREFIX}namespaces/${this.ns}/${path}`;
     if (globalThis[NAMESPACE].cache.has(name)) return name;
     // Immediately start processing the cache
-    return globalThis[NAMESPACE].cache.setPromise(name, generate, { expires: Date.now() + 60_000 }).then(() => name);
+    return globalThis[NAMESPACE].cache.setPromise(name, generate, { expires: Date.now() + day, asset: this.asset }).then(() => name);
   }
 }

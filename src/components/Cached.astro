@@ -6,10 +6,10 @@ interface Props {
 }
 
 const { data } = Astro.props;
-const h = hash(JSON.stringify(data));
+const h = hash(JSON.stringify(data, null, 2));
 
-const store = new Store("image");
-const asset = await store.putWithCache(`${h}.json`, async () => {
+const store = new Store("image", { asset: true });
+const asset = await store.setWithCache(`${h}.json`, async () => {
   await new Promise((res) => setTimeout(res, 2000));
   return JSON.stringify(data, null, 2);
 });

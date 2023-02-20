@@ -24,8 +24,7 @@ const integration = () => {
         if (ssr) {
           injectRoute({
             pattern: `${prefix}[...slug]`,
-            // TODO: allow virtual entryPoint
-            entryPoint: './src/bundle.ts'
+            entryPoint: './astro-store/entrypoint.production.js'
           })
         }
         updateConfig({
@@ -51,9 +50,8 @@ const integration = () => {
                 resolveId(id) {
                   if (id === namespace) return virtualId;
                 },
-                load(id) {
+                load(id, opts) {
                   if (id !== virtualId) return;
-
                   if (command === 'build' && ssr) {
                     // TODO: configure keyv adapter automatically
                     const virtualFile = fs.readFileSync(new URL('./entrypoint.production.js', import.meta.url), 'utf8')
