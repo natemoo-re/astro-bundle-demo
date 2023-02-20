@@ -24,7 +24,8 @@ const integration = () => {
         if (ssr) {
           injectRoute({
             pattern: `${prefix}[...slug]`,
-            entryPoint: './astro-store/entrypoint.production.js'
+            // TODO: allow virtual entryPoint
+            entryPoint: './src/store.ts'
           })
         }
         updateConfig({
